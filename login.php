@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $users = mysqli_fetch_assoc($result);
         $_SESSION['user_id'] = $users['id'];
         $_SESSION['username'] = $username;
+        $_SESSION['role'] = $users['role'];
 
         if ($users['role'] == 'supplier') {
             header('Location: supplier.php');
@@ -45,12 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: inline-block;
         }
 
-        .center {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
         .input {
             width: 200px;
         }
@@ -61,33 +56,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 2px solid #ccc;
             border-radius: 2px;
         }
+
         footer {
             padding-left: 40px;
+        }
+
+        div.content {
+            margin-left: 0px;
+            padding: unset;
         }
     </style>
 </head>
 
 <body>
-    <div class="center">
-        <div class="container card">
-            <form method="post" action="login.php">
+    <div class="content flex-vertical">
+        <div style="flex-grow: 1"></div>
+        <div style="flex-grow: 1">
+            <div class="container card">
+                <form method="post" action="login.php">
 
-                <h2 class="mt-1">Login</h2>
+                    <h2 class="mt-1">Login</h2>
 
-                <?php if (isset($error_message)): ?>
-                    <p style="color: red;"><?php echo $error_message; ?></p>
-                <?php endif; ?>
+                    <?php if (isset($error_message)): ?>
+                        <p style="color: red;"><?php echo $error_message; ?></p>
+                    <?php endif; ?>
 
-                <label for="username">Username:</label>
-                <input class="input mb-2" type="text" id="username" name="username" required><br>
+                    <label for="username">Username:</label>
+                    <input class="input mb-2" type="text" id="username" name="username" required><br>
 
-                <label for="password">Password:</label>
-                <input class="input mb-2" type="password" id="password" name="password" required><br>
+                    <label for="password">Password:</label>
+                    <input class="input mb-2" type="password" id="password" name="password" required><br>
 
-                <button class="btn" type="submit">Login</button>
-            </form>
-        </div>
-    </div>
-    <?php
-include 'footer.php';
-?>
+                    <button class="btn" type="submit">Login</button>
+                </form>
+            </div>
+
+            <?php
+            include 'footer.php';
+            ?>

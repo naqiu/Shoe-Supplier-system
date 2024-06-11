@@ -1,105 +1,13 @@
-<!-- Add the following styles at the top of each PHP file (e.g., agent.php, changePassword.php) after the opening PHP tag -->
-
-<style>
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f0f0f0;
-        margin: 0;
-        padding: 0;
-    }
-
-    header {
-        background-color: #333;
-        color: white;
-        text-align: center;
-        padding: 10px;
-    }
-
-    section {
-        background-color: #fff;
-        padding: 20px;
-        margin: 10px;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    li {
-        margin-bottom: 10px;
-        border-bottom: 1px solid #ccc;
-        padding-bottom: 10px;
-    }
-
-    form {
-        margin-top: 20px;
-    }
-
-    button {
-        background-color: #4caf50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 3px;
-        cursor: pointer;
-    }
-
-    button:hover {
-        background-color: #45a049;
-    }
-
-    input {
-        padding: 8px;
-        margin: 5px 0;
-        box-sizing: border-box;
-    }
-
-    h2 {
-        color: #333;
-    }
-
-    footer {
-        background-color: #333;
-        color: white;
-        text-align: center;
-        padding: 10px;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-    }
-</style>
-
 <?php
+include 'header.php';
 
-session_start();
-
-// Check if the user is logged in as a supplier
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header("Location: login.php");
     exit();
 }
 
-include 'header.php';
-
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$database = 'distribution_system';
-
-$conn = mysqli_connect($host, $user, $password, $database);
-
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
-
-// Function to fetch products below restock threshold
-
-
-// Function to fetch products below restock threshold
-function fetchLowStockProducts($conn, $supplierId) {
+function fetchLowStockProducts($conn, $supplierId)
+{
     $query = "SELECT * FROM products WHERE supplier_id = $supplierId AND stock < restock_threshold";
     $result = mysqli_query($conn, $query);
 
@@ -124,8 +32,8 @@ function fetchLowStockProducts($conn, $supplierId) {
     }
 }
 
-// Function to fetch orders with 'Pending' approval status
-function fetchPendingOrders($conn, $supplierId) {
+function fetchPendingOrders($conn, $supplierId)
+{
     $query = "SELECT orders.*, products.product_name, users.username AS agent_username
               FROM orders
               INNER JOIN products ON orders.product_id = products.id
@@ -183,8 +91,11 @@ function fetchPendingOrders($conn, $supplierId) {
         <li><a href="viewAgents.php">Profile Update</a></li>
         <li><a href="Sales.php">Sales</a></li>
         <li><a href="topSellingProduct.php">Top Selling Product</a></li>
-       
     </ul>
+    <p>to do:</p>
+        <p>-limited stock alert</p>
+        <p>-stock history graph /analytic</p>
+        <p>-sales report</p>
 </section>
 
 <?php
@@ -195,7 +106,6 @@ fetchLowStockProducts($conn, $_SESSION['user_id']);
 fetchPendingOrders($conn, $_SESSION['user_id']);
 
 
-include 'footer.php';
 mysqli_close($conn);
 if (isset($_SESSION['order_approved'])) {
     echo '<script>alert("Order has been updated!");</script>';
@@ -204,6 +114,6 @@ if (isset($_SESSION['order_approved'])) {
 }
 ?>
 
-<form method="post" action="logout.php">
-    <button type="submit">Logout</button>
-</form>
+<?php
+include 'footer.php';
+?>

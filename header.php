@@ -16,12 +16,22 @@ include 'db_connect.php';
 <body>
 
     <div class="sidebar">
-        <a class="active" href="#home">Home</a>
-        <a href="#news">News</a>
-        <a href="#contact">Contact</a>
-        <a href="#about">About</a>
+        <?php
+        if ($_SESSION['role'] == 'supplier') { ?>
+            <a href="supplier.php">Home</a>
+            <a href="viewAgents.php">Agent</a>
+            <a href="viewProduct.php">Products</a>
+            <a href="Sales.php">Sales</a>
+            <a href="#">My Profile</a>
+        <?php } elseif ($_SESSION['role'] == 'agent') { ?>
+            <a href="#">Products</a>
+            <a href="#">Sales</a>
+            <a href="#">My Profile</a>
+        <?php } ?>
+
         <a href="logout.php">Logout</a>
     </div>
 
 
     <div class="content flex-vertical">
+        <div class="flex-ctn" style="flex-grow: 1">
