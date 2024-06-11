@@ -80,18 +80,7 @@ function fetchPendingOrders($conn, $supplierId)
 
 <section>
     <h2>Welcome, Supplier!</h2>
-    <p>You can create a new agent profile:</p>
-    <a href="createAgent.php">Create Agent Profile</a>
 
-    <p>You can manage your products:</p>
-    <ul>
-        <li><a href="createProduct.php">Create Product</a></li>
-        <li><a href="updateProduct.php">Update Product Stocks</a></li>
-        <li><a href="viewProduct.php">View Products</a></li>
-        <li><a href="viewAgents.php">Profile Update</a></li>
-        <li><a href="Sales.php">Sales</a></li>
-        <li><a href="topSellingProduct.php">Top Selling Product</a></li>
-    </ul>
     <p>to do:</p>
         <p>-limited stock alert</p>
         <p>-stock history graph /analytic</p>

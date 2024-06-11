@@ -27,18 +27,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 ?>
-
-<!-- Add your create agent profile form here -->
+<style>
+    label {
+        min-width: 160px;
+        display: inline-block;
+        vertical-align: top;
+        padding-top: 9px;
+    }
+</style>
 <section>
     <h2>Create Agent Profile</h2>
     <form method="post" action="createAgent.php">
         <label for="agent_username">Agent Username:</label>
-        <input type="text" id="agent_username" name="agent_username" required><br>
+        <input class="input mb-2" type="text" id="agent_username" name="agent_username" required><br>
 
         <label for="agent_password">Agent Password:</label>
-        <input type="password" id="agent_password" name="agent_password" required><br>
+        <input class="input mb-2" type="password" id="agent_password" name="agent_password" required><br>
 
-        <button type="submit">Create Agent Profile</button>
+        <button class="btn" type="submit">Create Agent Profile</button>
     </form>
 </section>
 

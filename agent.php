@@ -1,4 +1,12 @@
 
+<style>
+    label {
+        min-width: 160px;
+        display: inline-block;
+        vertical-align: top;
+        padding-top: 9px;
+    }
+</style>
 <?php
 include 'header.php';
 
@@ -67,12 +75,12 @@ if ($result && mysqli_num_rows($result) > 0) {
         echo 'Stock: ' . $row['stock'] . '<br>';
 
         echo '<form method="post" action="agent.php">';
-        echo '<input type="hidden" name="product_id" value="' . $row['id'] . '">';
-        echo 'Customer Name: <input type="text" name="customer_name" required><br>';
-        echo 'Customer Address: <input type="text" name="customer_address" required><br>';
-        echo 'Customer Contact: <input type="text" name="customer_contact" required><br>';
-        echo 'Order Quantity: <input type="number" name="order_quantity" min="1" max="' . $row['stock'] . '">';
-        echo '<button type="submit">Place Order</button>';
+        echo '<input class="input mb-2" type="hidden" name="product_id" value="' . $row['id'] . '">';
+        echo '<label>Customer Name: </label><input class="input mb-2" type="text" name="customer_name" required><br>';
+        echo '<label>Customer Address: </label><input class="input mb-2" type="text" name="customer_address" required><br>';
+        echo '<label>Customer Contact: </label><input class="input mb-2" type="text" name="customer_contact" required><br>';
+        echo '<label>Order Quantity: </label><input class="input mb-2" type="number" name="order_quantity" min="1" max="' . $row['stock'] . '"><br>';
+        echo '<button class="btn"type="submit">Place Order</button>';
         echo '</form>';
 
         echo '</li>';

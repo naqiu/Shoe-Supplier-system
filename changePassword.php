@@ -36,12 +36,11 @@ if (isset($_GET['id'])) {
     <h2>Change Password for <?php echo $agent['username']; ?></h2>
     <form method="post" action="">
         <label for="new_password">New Password:</label>
-        <input type="password" name="new_password" required>
+        <input class="input" type="password" name="new_password" required>
 
-        <button type="submit">Change Password</button>
+        <button class="btn" type="submit">Change Password</button>
     </form>
 </section>
-
 <?php
     } else {
         echo '<p>Agent not found.</p>';

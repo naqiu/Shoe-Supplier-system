@@ -37,24 +37,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
+<style>
+    label {
+        min-width: 160px;
+        display: inline-block;
+        vertical-align: top;
+        padding-top: 9px;
+    }
+</style>
 <section>
     <h2>Update Product Stock</h2>
     <form method="post" action="updateProduct.php">
         <label for="product_id">Product ID:</label>
-        <input type="text" id="product_id" name="product_id" required><br>
+        <input class="input mb-2" type="text" id="product_id" name="product_id" required><br>
         
         <label for="product_name">Product Name:</label>
-        <input type="text" id="product_name" name="product_name" required><br>
-        <!-- Removed product_description field -->
+        <input class="input mb-2" type="text" id="product_name" name="product_name" required><br>
 
         <label for="product_price">Product Price:</label>
-        <input type="number" id="product_price" name="product_price" required><br>
+        <input class="input mb-2" type="number" id="product_price" name="product_price" required><br>
 
         <label for="new_stock">New Stock Quantity:</label>
-        <input type="number" id="new_stock" name="new_stock" required><br>
+        <input class="input mb-2" type="number" id="new_stock" name="new_stock" required><br>
 
-        <button type="submit">Update Stock</button>
+        <button class="btn" type="submit">Update Stock</button>
     </form>
 </section>
 

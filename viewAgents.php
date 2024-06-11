@@ -31,7 +31,9 @@ function fetchAgents($conn) {
 
 // Display the list of agents
 fetchAgents($conn);
-
+?>
+<a href="createAgent.php">Add Agent</a>
+<?php
 include 'footer.php';
 mysqli_close($conn);
 ?>
