@@ -1,4 +1,5 @@
 <?php
+include 'header.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) && isset($_POST['new_approval_status'])) {
     $orderId = $_POST['id'];
     $newApprovalStatus = $_POST['new_approval_status'];

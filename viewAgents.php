@@ -1,3 +1,25 @@
+<style>
+    .btn-s {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+        border-radius: 8px !important;
+        background-color: #ffffff !important;
+        color: #000 !important;
+        border: 2px solid #000 !important;
+    }
+
+    th {
+        padding: 5px;
+        font-size: 16px;
+        font-weight: 700;
+        text-align: center;
+        cursor: pointer;
+        border: none;
+        background-color: var(--primary);
+        color: #fff;
+        text-decoration: none;
+    }
+</style>
 <?php
 include 'header.php';
 
@@ -6,7 +28,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-function fetchAgents($conn) {
+function fetchAgents($conn)
+{
     $query = "SELECT * FROM users WHERE role = 'Agent'";
     $result = mysqli_query($conn, $query);
 
@@ -14,12 +37,12 @@ function fetchAgents($conn) {
         echo '<section>';
         echo '<h2>Registered Agents:</h2>';
         echo '<table>';
-        echo '<tr><th>Agent ID</th><th>Username</th><th>Action</th></tr>';
+        echo '<tr><th class="px-3">Agent ID</th><th class="px-3">Username</th><th>Action</th></tr>';
         while ($row = mysqli_fetch_assoc($result)) {
             echo '<tr>';
             echo '<td>' . $row['id'] . '</td>';
             echo '<td>' . $row['username'] . '</td>';
-            echo '<td><a href="changePassword.php?id=' . $row['id'] . '">Change Password</a></td>';
+            echo '<td><a class="btn btn-s" href="changePassword.php?id=' . $row['id'] . '">Change Password</a></td>';
             echo '</tr>';
         }
         echo '</table>';
@@ -29,11 +52,12 @@ function fetchAgents($conn) {
     }
 }
 
+?>
+<a class="btn" href="createAgent.php">Add Agent</a>
+<?php
 // Display the list of agents
 fetchAgents($conn);
-?>
-<a href="createAgent.php">Add Agent</a>
-<?php
+
 include 'footer.php';
 mysqli_close($conn);
 ?>

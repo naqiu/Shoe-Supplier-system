@@ -1,3 +1,28 @@
+<style>
+    .btn-s {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+        border-radius: 8px !important;
+        background-color: #ffffff !important;
+        color: #000 !important;
+        border: 2px solid #000 !important;
+    }
+
+    th {
+        padding: 5px;
+        font-size: 16px;
+        font-weight: 700;
+        text-align: center;
+        cursor: pointer;
+        border: none;
+        background-color: var(--primary);
+        color: #fff;
+        text-decoration: none;
+    }
+    form{
+        margin-bottom: 0 !important;
+    }
+</style>
 <?php
 include 'header.php';
 if (!isset($_SESSION['user_id'])) {
@@ -16,10 +41,10 @@ if ($stmt) {
 
     if (mysqli_num_rows($result) > 0) {
         echo '<section>';
-        echo '<h2>Your Products</h2>';
-        echo '<table border="1">';
-        echo '<tr><th>Product Name</th><th>Description</th><th>Price</th><th>Stock</th><th>Action</th></tr>';
-        
+        echo '<h2>Products</h2>';
+        echo '<table>';
+        echo '<tr><th class="px-3">Product Name</th><th class="px-3">Description</th><th class="px-3">Price</th><th class="px-3">Stock</th><th class="px-3">Action</th></tr>';
+
         while ($row = mysqli_fetch_assoc($result)) {
             echo '<tr>';
             echo '<td>' . $row['product_name'] . '</td>';
@@ -29,7 +54,7 @@ if ($stmt) {
             echo '<td>';
             echo '<form method="post" action="deleteProduct.php">';
             echo '<input type="hidden" name="product_id" value="' . $row['id'] . '">';
-            echo '<button type="submit">Delete</button>';
+            echo '<button class="btn btn-s" type="submit">Delete</button>';
             echo '</form>';
             echo '</td>';
             echo '</tr>';
@@ -40,7 +65,7 @@ if ($stmt) {
     } else {
         echo '<p>No products found.</p>';
     }
-    
+
     mysqli_stmt_close($stmt);
 } else {
     echo '<p>Database error. Please try again later.</p>';
