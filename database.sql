@@ -16,6 +16,7 @@ CREATE TABLE `orders` (
   `customer_address` text NOT NULL,
   `customer_contact` varchar(50) NOT NULL,
   `quantity` int(11) NOT NULL,
+  `order_date` DATE DEFAULT CURRENT_DATE,
   `approval_status` varchar(50) NOT NULL,
   `sales_amount` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
