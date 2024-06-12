@@ -2,4 +2,4 @@
 
 use xampp to run
 
-use database.sql to add database to phpMyAdmin
+use <a href="database.sql">database.sql</a> to add database to phpMyAdmin
