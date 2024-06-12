@@ -72,6 +72,6 @@ if ($stmt) {
 }
 
 ?>
-<li><a href="createProduct.php">Create Product</a></li>
-<li><a href="updateProduct.php">Update Product Stocks</a></li>
+<p><a class="btn btn-s" href="createProduct.php">Create Product</a></p>
+<p><a class="btn btn-s" href="updateProduct.php">Update Product Stocks</a></p>
 <?php include 'footer.php'; ?>

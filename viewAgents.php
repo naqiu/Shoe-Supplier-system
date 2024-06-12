@@ -1,13 +1,4 @@
 <style>
-    .btn-s {
-        padding: 6px 10px !important;
-        font-size: 12px !important;
-        border-radius: 8px !important;
-        background-color: #ffffff !important;
-        color: #000 !important;
-        border: 2px solid #000 !important;
-    }
-
     th {
         padding: 5px;
         font-size: 16px;
@@ -53,7 +44,7 @@ function fetchAgents($conn)
 }
 
 ?>
-<a class="btn" href="createAgent.php">Add Agent</a>
+<a class="btn btn-s" href="createAgent.php">Add Agent</a>
 <?php
 // Display the list of agents
 fetchAgents($conn);

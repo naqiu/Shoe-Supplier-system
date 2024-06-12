@@ -56,7 +56,7 @@ function fetchTotalPerformance($conn, $supplierId) {
     }
 }
 ?>
-<a href="topSellingProduct.php">Top Selling Product</a>
+<a class="btn btn-s" href="topSellingProduct.php">Top Selling Product</a>
 <?php
 
 // Display sales information by agent

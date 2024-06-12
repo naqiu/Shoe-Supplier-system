@@ -1,12 +1,3 @@
-<style>
-    .btn-s {
-        padding: 6px 10px !important;
-        font-size: 12px !important;
-        border-radius: 8px !important;
-        background-color: #ffffff !important;
-        color: #000 !important;
-        border: 2px solid #000 !important;
-    }</style>
 <?php
 include 'header.php';
 
