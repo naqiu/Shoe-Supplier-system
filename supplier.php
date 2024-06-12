@@ -1,3 +1,12 @@
+<style>
+    .btn-s {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+        border-radius: 8px !important;
+        background-color: #ffffff !important;
+        color: #000 !important;
+        border: 2px solid #000 !important;
+    }</style>
 <?php
 include 'header.php';
 
@@ -60,10 +69,10 @@ function fetchPendingOrders($conn, $supplierId)
 
             echo '<form method="post" action="updateApprovalStatus.php">';
             echo '<input type="hidden" name="id" value="' . $row['id'] . '">';
-            echo '<select name="new_approval_status">';
+            echo '<select class="select mr-2" name="new_approval_status">';
             echo '<option value="Approved">Approved</option>';
             echo '</select>';
-            echo '<button type="submit">Update Approval Status</button>';
+            echo '<button class="btn btn-s" type="submit">Update Approval Status</button>';
             echo '</form>';
             echo '</li>';
         }
