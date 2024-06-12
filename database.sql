@@ -34,7 +34,8 @@ CREATE TABLE `products` (
   `product_description` text DEFAULT NULL,
   `product_price` decimal(10,2) NOT NULL,
   `supplier_id` int(11) NOT NULL,
-  `stock` int(11) NOT NULL
+  `stock` int(11) NOT NULL,
+  `restock_threshold` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
