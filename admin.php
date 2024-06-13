@@ -1,4 +1,8 @@
 <style>
+    td {
+        max-width: 300px;
+    }
+    
     .flex-container {
         display: flex;
         flex-wrap: wrap;

@@ -56,33 +56,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id']) && isse
     }
 }
 
-$query = "SELECT * FROM products";
+$product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+$query = "SELECT * FROM products WHERE id = $product_id";
 $result = mysqli_query($conn, $query);
 
-if ($result && mysqli_num_rows($result) > 0) {
+if ($result && mysqli_num_rows($result) > 0):
+    $product = mysqli_fetch_assoc($result);
+    ?>
 
-    echo '<ul>';
-    while ($row = mysqli_fetch_assoc($result)) {
-        echo '<li>';
-        echo 'Product Name: ' . $row['product_name'] . '<br>';
-        echo 'Description: ' . $row['product_description'] . '<br>';
-        echo 'Price: RM' . $row['product_price'] . '<br>';
-        echo 'Stock: ' . $row['stock'] . '<br>';
+    <h2>Place Order</h2>
+    <h3>Product Details</h3>
+    <p><img src="<?php echo $product['image']; ?>" width="200"></p>
+    <p><strong>Product Name:</strong> <?php echo $product['product_name']; ?></p>
+    <p><strong>Description:</strong> <?php echo $product['product_description']; ?></p>
+    <p><strong>Price (RM):</strong> <?php echo $product['product_price']; ?></p>
+    <p><strong>Stock:</strong> <?php echo $product['stock']; ?></p>
+    
+    <form method="post" action="agentOrder.php">
+        <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
+        <label>Customer Name:</label>
+        <input class="input mb-2" type="text" name="customer_name" required><br>
 
-        echo '<form method="post" action="agentOrder.php">';
-        echo '<input class="input mb-2" type="hidden" name="product_id" value="' . $row['id'] . '">';
-        echo '<label>Customer Name: </label><input class="input mb-2" type="text" name="customer_name" required><br>';
-        echo '<label>Customer Address: </label><input class="input mb-2" type="text" name="customer_address" required><br>';
-        echo '<label>Customer Contact: </label><input class="input mb-2" type="text" name="customer_contact" required><br>';
-        echo '<label>Order Quantity: </label><input class="input mb-2" type="number" name="order_quantity" min="1" max="' . $row['stock'] . '"><br>';
-        echo '<button class="btn"type="submit">Place Order</button>';
-        echo '</form>';
+        <label>Customer Address:</label>
+        <textarea class="input mb-2" style="width:300px;"
+            name="customer_address" required></textarea><br>
 
-        echo '</li>';
-    }
-    echo '</ul>';
-} else {
-    echo '<p>No products available.</p>';
-}
+        <label>Customer Contact:</label>
+        <input class="input mb-2" type="text" name="customer_contact" required><br>
+
+        <label>Order Quantity:</label>
+        <input class="input mb-2" type="number" name="order_quantity" min="1" max="<?php echo $product['stock']; ?>" required><br>
+
+        <button class="btn" type="submit">Place Order</button>
+    </form>
+<?php else: ?>
+    <p>No products available.</p>
+<?php endif;
 ?>
 <?php include 'footer.php'; ?>
