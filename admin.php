@@ -2,7 +2,7 @@
     td {
         max-width: 300px;
     }
-    
+
     .flex-container {
         display: flex;
         flex-wrap: wrap;
@@ -92,7 +92,7 @@ function fetchLowStockProducts($conn)
                 <a href="updateProduct.php?id=<?php echo $row['id']; ?>">
                     <img src="<?php echo $row['image']; ?>"><br>
                     <div>
-                        <?php echo $row['product_name']; ?><br>
+                        <b><?php echo $row['product_name']; ?></b><br>
                         Current Stock: <?php echo $row['stock']; ?><br>
                     </div>
                 </a>
