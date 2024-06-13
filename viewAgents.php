@@ -1,54 +1,58 @@
 <style>
-    th {
-        padding: 5px;
-        font-size: 16px;
-        font-weight: 700;
-        text-align: center;
-        cursor: pointer;
-        border: none;
-        background-color: var(--primary);
-        color: #fff;
-        text-decoration: none;
+    table {
+        max-width: 600px;
     }
 </style>
 <?php
 include 'header.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: login.php');
     exit();
 }
-
-function fetchAgents($conn)
-{
-    $query = "SELECT * FROM users WHERE role = 'Agent'";
-    $result = mysqli_query($conn, $query);
-
-    if ($result && mysqli_num_rows($result) > 0) {
-        echo '<section>';
-        echo '<h2>Registered Agents:</h2>';
-        echo '<table>';
-        echo '<tr><th class="px-3">Agent ID</th><th class="px-3">Username</th><th>Action</th></tr>';
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo '<tr>';
-            echo '<td>' . $row['id'] . '</td>';
-            echo '<td>' . $row['username'] . '</td>';
-            echo '<td><a class="btn btn-s" href="changePassword.php?id=' . $row['id'] . '">Change Password</a></td>';
-            echo '</tr>';
-        }
-        echo '</table>';
-        echo '</section>';
-    } else {
-        echo '<p>No agents registered.</p>';
+try {
+    $stmt = $conn->prepare("SELECT id, username FROM users WHERE role = 'Agent'");
+    
+    if (!$stmt) {
+        throw new Exception($conn->error);
     }
-}
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
 
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+    $conn->close();
+    exit();
+}
+$conn->close();
 ?>
-<a class="btn btn-s" href="createAgent.php">Add Agent</a>
-<?php
-// Display the list of agents
-fetchAgents($conn);
+<h2>Registered Agents</h2>
+<a class="btn btn-s mb-3" href="createAgent.php">Add Agent</a>
+<?php if ($result && $result->num_rows > 0): ?>
+    <table>
+        <thead>
+            <tr>
+                <th>Agent ID</th>
+                <th>Username</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?php echo $row['id']; ?></td>
+                    <td><?php echo $row['username']; ?></td>
+                    <td>
+                        <a class="btn btn-s" href="changePassword.php?id=<?php echo $row['id']; ?>">Change Password</a>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
+<?php else: ?>
+    <p>No agents registered.</p>
+<?php endif; 
 
 include 'footer.php';
-mysqli_close($conn);
 ?>
