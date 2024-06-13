@@ -25,7 +25,7 @@ include 'db_connect.php';
             <a href="adminSetting.php">Setting</a>
         <?php } elseif ($_SESSION['role'] == 'agent') { ?>
             <a href="agent.php">Home</a>
-            <a href="agentOrder.php">Order</a>
+            <a href="agentProduct.php">Product</a>
             <a href="#">Sales</a>
             <a href="#">Profile</a>
         <?php } ?>
