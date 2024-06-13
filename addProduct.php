@@ -57,10 +57,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <textarea class="input mb-2" style="width:300px;" name="product_description"></textarea><br>
 
         <label>Price (RM):</label>
-        <input class="input mb-2" type="text" name="product_price" required><br>
+        <input class="input mb-2" type="number" step="0.01" name="product_price" required><br>
 
         <label>Stock:</label>
-        <input class="input mb-2" type="text" name="stock" required><br>
+        <input class="input mb-2" type="number" name="stock" required><br>
 
         <label>Image:</label>
         <label for="file-upload" class="btn btn-s btn-upload mb-2">

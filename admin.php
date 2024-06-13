@@ -8,9 +8,22 @@ if (!isset($_SESSION['user_id'])) {
 
 function fetchLowStockProducts($conn)
 {
-    $query = "SELECT * FROM products WHERE stock < restock_threshold";
-    $result = mysqli_query($conn, $query);
+    $stmt = $conn->prepare("
+    SELECT * FROM products WHERE stock < (
+        SELECT restock_threshold
+        FROM admin
+        WHERE user_id = ?
+    )
+");
 
+    if (!$stmt) {
+        throw new Exception($conn->error);
+    }
+
+    // Bind the parameter and execute the statement
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
     if ($result && mysqli_num_rows($result) > 0) {
         echo '<section>';
         echo '<h2>Products needing restocking:</h2>';
@@ -19,7 +32,6 @@ function fetchLowStockProducts($conn)
             echo '<li>';
             echo 'Product Name: ' . $row['product_name'] . '<br>';
             echo 'Current Stock: ' . $row['stock'] . '<br>';
-            echo 'Restock Threshold: ' . $row['restock_threshold'] . '<br>';
             echo '</li>';
         }
         echo '</ul>';
