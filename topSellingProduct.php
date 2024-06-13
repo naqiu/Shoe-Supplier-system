@@ -5,8 +5,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-function fetchTopSellingProduct($conn, $supplierId) {
-    $query = "SELECT * FROM products WHERE supplier_id = $supplierId ORDER BY total_sold DESC LIMIT 1";
+function fetchTopSellingProduct($conn) {
+    $query = "SELECT * FROM products ORDER BY total_sold DESC LIMIT 1";
     $result = mysqli_query($conn, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
@@ -22,7 +22,7 @@ function fetchTopSellingProduct($conn, $supplierId) {
 }
 
 // Display the top-selling product
-fetchTopSellingProduct($conn, $_SESSION['user_id']);
+fetchTopSellingProduct($conn);
 
 include 'footer.php';
 mysqli_close($conn);
