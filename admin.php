@@ -6,9 +6,9 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-function fetchLowStockProducts($conn, $supplierId)
+function fetchLowStockProducts($conn)
 {
-    $query = "SELECT * FROM products WHERE supplier_id = $supplierId AND stock < restock_threshold";
+    $query = "SELECT * FROM products WHERE stock < restock_threshold";
     $result = mysqli_query($conn, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
@@ -32,13 +32,13 @@ function fetchLowStockProducts($conn, $supplierId)
     }
 }
 
-function fetchPendingOrders($conn, $supplierId)
+function fetchPendingOrders($conn)
 {
     $query = "SELECT orders.*, products.product_name, users.username AS agent_username
               FROM orders
               INNER JOIN products ON orders.product_id = products.id
               INNER JOIN users ON orders.agent_id = users.id
-              WHERE products.supplier_id = $supplierId AND orders.approval_status = 'Pending'
+              WHERE orders.approval_status = 'Pending'
               ORDER BY orders.order_date DESC";
 
     try {
@@ -107,10 +107,10 @@ function fetchPendingOrders($conn, $supplierId)
 
 <?php
 // Display low stock products
-fetchLowStockProducts($conn, $_SESSION['user_id']);
+fetchLowStockProducts($conn);
 
 // Display orders with 'Pending' approval status
-fetchPendingOrders($conn, $_SESSION['user_id']);
+fetchPendingOrders($conn);
 
 
 if (isset($_SESSION['order_approved'])) {
