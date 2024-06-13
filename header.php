@@ -24,9 +24,10 @@ include 'db_connect.php';
             <a href="Sales.php">Sales</a>
             <a href="adminSetting.php">Setting</a>
         <?php } elseif ($_SESSION['role'] == 'agent') { ?>
-            <a href="#">Products</a>
+            <a href="agent.php">Home</a>
+            <a href="agentOrder.php">Order</a>
             <a href="#">Sales</a>
-            <a href="#">My Profile</a>
+            <a href="#">Profile</a>
         <?php } ?>
 
         <a href="logout.php">Logout</a>
