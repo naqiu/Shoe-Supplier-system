@@ -12,7 +12,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $productName = $_POST['product_name'];
     $productDescription = $_POST['product_description'];
     $productPrice = $_POST['product_price'];
-    $supplierId = $_SESSION['user_id'];
     $stock = $_POST['stock'];
     $newImage = $_FILES["image"]["name"];
 
@@ -26,16 +25,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     try {
-        $stmt = $conn->prepare("UPDATE products SET product_name = ?, product_description = ?, product_price = ?, supplier_id = ?, stock = ?, image = ? WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE products SET product_name = ?, product_description = ?, product_price = ?, stock = ?, image = ? WHERE id = ?");
         if (!$stmt) {
             throw new Exception($conn->error);
         }
-        $stmt->bind_param("ssdiisi", $productName, $productDescription, $productPrice, $supplierId, $stock, $target_file, $id);
-
+        $stmt->bind_param("ssdisi", $productName, $productDescription, $productPrice, $stock, $target_file, $id);
+    
         if (!$stmt->execute()) {
             throw new Exception($stmt->error);
         }
-
+    
         header('Location: viewProduct.php');
         exit();
     } catch (Exception $e) {
@@ -46,16 +45,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 } else {
     try {
-        $stmt = $conn->prepare("SELECT * FROM products WHERE id = ? AND supplier_id = ?");
+        $stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
         if (!$stmt) {
-            //throw new Exception($conn->error);
+            throw new Exception($conn->error);
         }
-        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
+    
         if ($result->num_rows == 0) {
-            throw new Exception("<p>Product not found</p>");
+            throw new Exception("Product not found");
         }
+    
         $product = $result->fetch_assoc();
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
