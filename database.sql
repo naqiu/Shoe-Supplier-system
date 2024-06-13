@@ -29,15 +29,19 @@ CREATE TABLE `orders` (
 --
 
 CREATE TABLE `products` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `product_name` varchar(100) NOT NULL,
   `product_description` text DEFAULT NULL,
   `product_price` decimal(10,2) NOT NULL,
   `supplier_id` int(11) NOT NULL,
   `stock` int(11) NOT NULL,
-  `restock_threshold` int(11) NOT NULL,
-  `total_sold` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `image` varchar(255) DEFAULT NULL,
+  `total_sold` int(11) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+);
+
+ALTER TABLE `products`
+  ADD KEY `supplier_id` (`supplier_id`);
 
 
 -- --------------------------------------------------------
@@ -70,12 +74,6 @@ ALTER TABLE `orders`
   ADD KEY `product_id` (`product_id`),
   ADD KEY `agent_id` (`agent_id`);
 
---
--- Indexes for table `products`
---
-ALTER TABLE `products`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `supplier_id` (`supplier_id`);
 
 --
 -- Indexes for table `users`
@@ -94,11 +92,6 @@ ALTER TABLE `users`
 ALTER TABLE `orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
---
--- AUTO_INCREMENT for table `products`
---
-ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users`

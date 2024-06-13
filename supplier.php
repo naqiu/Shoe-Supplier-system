@@ -41,37 +41,55 @@ function fetchPendingOrders($conn, $supplierId)
               WHERE products.supplier_id = $supplierId AND orders.approval_status = 'Pending'
               ORDER BY orders.order_date DESC";
 
-    $result = mysqli_query($conn, $query);
+    try {
+        // Execute the query
+        $result = mysqli_query($conn, $query);
 
-    if ($result && mysqli_num_rows($result) > 0) {
-        echo '<section>';
-        echo '<h2>Orders Pending Approval:</h2>';
-        echo '<ul>';
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo '<li>';
-            echo 'Product: ' . $row['product_name'] . '<br>';
-            echo 'Customer Name: ' . $row['customer_name'] . '<br>';
-            echo 'Address: ' . $row['customer_address'] . '<br>';
-            echo 'Contact Number: ' . $row['customer_contact'] . '<br>';
-            echo 'Quantity: ' . $row['quantity'] . '<br>';
-            echo 'Order Date: ' . $row['order_date'] . '<br>';
-            echo 'Agent: ' . $row['agent_username'] . '<br>';
-            echo 'Approval Status: ' . $row['approval_status'] . '<br>';
-
-            echo '<form method="post" action="updateApprovalStatus.php">';
-            echo '<input type="hidden" name="id" value="' . $row['id'] . '">';
-            echo '<select class="select mr-2" name="new_approval_status">';
-            echo '<option value="Approved">Approved</option>';
-            echo '</select>';
-            echo '<button class="btn btn-s" type="submit">Update Approval Status</button>';
-            echo '</form>';
-            echo '</li>';
+        if (!$result) {
+            throw new Exception(mysqli_error($conn));
         }
-        echo '</ul>';
-        echo '</section>';
-    } else {
-        echo '<p>No orders pending approval.</p>';
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+        $conn->close();
+        exit();
     }
+    $conn->close(); ?>
+    <h3>Orders Pending Approval:</h3>
+    <?php if (mysqli_num_rows($result) > 0): ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order Date</th>
+                    <th>Agent</th>
+                    <th>Product</th>
+                    <th>Address</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                    <tr>
+                        <td><?php echo $row['order_date']; ?></td>
+                        <td><?php echo $row['agent_username']; ?></td>
+                        <td><?php echo $row['product_name']; ?></td>
+                        <td><?php echo $row['customer_address']; ?></td>
+                        <td><?php echo $row['quantity']; ?></td>
+                        <td>
+                            <form method="post" action="updateOrderStatus.php">
+                                <a class="btn btn-s" href="xx.php?id=<?php echo $row['id']; ?>">Details</a>
+                                <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                <input type="hidden" name="status" value="Approved">
+                                <button class="btn btn-s" type="submit">Approve</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <p>No orders pending approval.</p>
+    <?php endif;
 }
 
 
@@ -82,9 +100,9 @@ function fetchPendingOrders($conn, $supplierId)
     <h2>Welcome, Supplier!</h2>
 
     <p>to do:</p>
-        <p>-limited stock alert</p>
-        <p>-stock history graph /analytic</p>
-        <p>-sales report</p>
+    <p>-limited stock alert</p>
+    <p>-stock history graph /analytic</p>
+    <p>-sales report</p>
 </section>
 
 <?php
@@ -95,7 +113,6 @@ fetchLowStockProducts($conn, $_SESSION['user_id']);
 fetchPendingOrders($conn, $_SESSION['user_id']);
 
 
-mysqli_close($conn);
 if (isset($_SESSION['order_approved'])) {
     echo '<script>alert("Order has been updated!");</script>';
     // Unset the session variable to avoid displaying the alert multiple times

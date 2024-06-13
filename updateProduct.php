@@ -2,38 +2,65 @@
 include 'header.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: login.php');
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $productId = $_POST['product_id']; // This will be passed from the form
-    $productPrice = $_POST['product_price'];
+$id = $_GET['id'];
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $productName = $_POST['product_name'];
-    $newStock = $_POST['new_stock']; // Newly added field for updated stock
+    $productDescription = $_POST['product_description'];
+    $productPrice = $_POST['product_price'];
+    $supplierId = $_SESSION['user_id'];
+    $stock = $_POST['stock'];
+    $newImage = $_FILES["image"]["name"];
 
-    if ( empty($productName) ||empty($productPrice) || empty($newStock)) {
-        echo '<p>Please fill in all fields.</p>';
+    if ($newImage) {
+        $target_dir = "uploads/";
+        $target_file = $target_dir . basename($newImage);
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        move_uploaded_file($_FILES["image"]["tmp_name"], $target_file);
     } else {
-        $supplierId = $_SESSION['user_id'];
-        
-        $query = "UPDATE products SET product_name = ?, product_price = ?, stock = ? WHERE id = ? AND supplier_id = ?";
-        $stmt = mysqli_prepare($conn, $query);
+        $target_file = $_POST['current_image'];
+    }
 
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, 'sdiis', $productName, $productPrice, $newStock, $productId, $supplierId);
-            $result = mysqli_stmt_execute($stmt);
+    try {
+        $stmt = $conn->prepare("UPDATE products SET product_name = ?, product_description = ?, product_price = ?, supplier_id = ?, stock = ?, image = ? WHERE id = ?");
+        if (!$stmt) {
+            throw new Exception($conn->error);
+        }
+        $stmt->bind_param("ssdiisi", $productName, $productDescription, $productPrice, $supplierId, $stock, $target_file, $id);
 
-            if ($result) {
-                echo '<p>Product and Stock updated successfully!</p>';
-            } else {
-                echo '<p>Error updating product and stock. Please try again.</p>';
-            }
-        } else {
-            echo '<p>Database error. Please try again later.</p>';
+        if (!$stmt->execute()) {
+            throw new Exception($stmt->error);
         }
 
-        mysqli_stmt_close($stmt);
+        header('Location: viewProduct.php');
+        exit();
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+    }
+
+    $stmt->close();
+    $conn->close();
+} else {
+    try {
+        $stmt = $conn->prepare("SELECT * FROM products WHERE id = ? AND supplier_id = ?");
+        if (!$stmt) {
+            //throw new Exception($conn->error);
+        }
+        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0) {
+            throw new Exception("<p>Product not found</p>");
+        }
+        $product = $result->fetch_assoc();
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+        $conn->close();
+        exit();
     }
 }
 ?>
@@ -45,23 +72,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         padding-top: 9px;
     }
 </style>
-<section>
-    <h2>Update Product Stock</h2>
-    <form method="post" action="updateProduct.php">
-        <label for="product_id">Product ID:</label>
-        <input class="input mb-2" type="text" id="product_id" name="product_id" required><br>
+<div>
+    <h2>Update Product</h2>
+    <form action="updateProduct.php?id=<?php echo $id; ?>" method="post" enctype="multipart/form-data">
+
+        <label>Product Name:</label>
+        <input class="input mb-2" type="text" name="product_name" value="<?php echo $product['product_name']; ?>"
+            required><br>
+
+        <label>Description:</label>
+        <textarea class="input mb-2" style="width:300px;"
+            name="product_description"><?php echo $product['product_description']; ?></textarea><br>
+
+        <label>Price (RM):</label>
+        <input class="input mb-2" type="text" name="product_price" value="<?php echo $product['product_price']; ?>"
+            required><br>
+
+        <label>Stock:</label>
+        <input class="input mb-2" type="text" name="stock" value="<?php echo $product['stock']; ?>" required><br>
+
+        <label>Image:</label>
+        <img src="<?php echo $product['image']; ?>" width="100"><br>
+        <input type="hidden" name="current_image" value="<?php echo $product['image']; ?>">
+        <label>New Image:</label>
+        <label for="file-upload" class="btn btn-s btn-upload mb-2">
+        <input id="file-upload" type="file" name="image" id="image">
+            Upload
+        </label>
+        <br>
         
-        <label for="product_name">Product Name:</label>
-        <input class="input mb-2" type="text" id="product_name" name="product_name" required><br>
-
-        <label for="product_price">Product Price:</label>
-        <input class="input mb-2" type="number" id="product_price" name="product_price" required><br>
-
-        <label for="new_stock">New Stock Quantity:</label>
-        <input class="input mb-2" type="number" id="new_stock" name="new_stock" required><br>
-
-        <button class="btn" type="submit">Update Stock</button>
+        <button class="btn" type="submit">Update Product</button>
     </form>
-</section>
+</div>
 
 <?php include 'footer.php'; ?>
