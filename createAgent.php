@@ -18,7 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($result) {
         // Agent profile created successfully, redirect to supplier.php
-        echo '<p>Agent Created Successfully</p>';      
+        echo '<p>Agent Created Successfully</p>';    
+        header('Location: viewAgents.php');  
         exit();
     } else {
         echo '<p>Agent has been made. Please try again.</p>';

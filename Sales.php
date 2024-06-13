@@ -6,11 +6,11 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-function fetchSalesByAgent($conn, $supplierId) {
+function fetchSalesByAgent($conn) {
     $query = "SELECT agent_id, COUNT(id) as total_orders, SUM(sales_amount) as total_sales
               FROM orders
               WHERE agent_id IS NOT NULL AND EXISTS (
-                  SELECT 1 FROM products WHERE products.id = orders.product_id AND products.supplier_id = $supplierId
+                  SELECT 1 FROM products WHERE products.id = orders.product_id
               )
               GROUP BY agent_id";
 
@@ -35,11 +35,11 @@ function fetchSalesByAgent($conn, $supplierId) {
 }
 
 // Function to fetch total sales performance
-function fetchTotalPerformance($conn, $supplierId) {
+function fetchTotalPerformance($conn) {
     $query = "SELECT COUNT(id) as total_orders, SUM(sales_amount) as total_sales
               FROM orders
               WHERE EXISTS (
-                  SELECT 1 FROM products WHERE products.id = orders.product_id AND products.supplier_id = $supplierId
+                  SELECT 1 FROM products WHERE products.id = orders.product_id
               )";
 
     $result = mysqli_query($conn, $query);
@@ -60,10 +60,10 @@ function fetchTotalPerformance($conn, $supplierId) {
 <?php
 
 // Display sales information by agent
-fetchSalesByAgent($conn, $_SESSION['user_id']);
+fetchSalesByAgent($conn);
 
 // Display total sales performance
-fetchTotalPerformance($conn, $_SESSION['user_id']);
+fetchTotalPerformance($conn);
 
 include 'footer.php';
 mysqli_close($conn);
