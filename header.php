@@ -17,8 +17,8 @@ include 'db_connect.php';
 
     <div class="sidebar">
         <?php
-        if ($_SESSION['role'] == 'supplier') { ?>
-            <a href="supplier.php">Home</a>
+        if ($_SESSION['role'] == 'admin') { ?>
+            <a href="admin.php">Home</a>
             <a href="viewAgents.php">Agent</a>
             <a href="viewProduct.php">Products</a>
             <a href="Sales.php">Sales</a>

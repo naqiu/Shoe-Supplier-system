@@ -24,7 +24,7 @@ try {
         throw new Exception(mysqli_error($conn));
     }
 
-    header('Location: supplier.php');
+    header('Location: admin.php');
     exit();
 } catch (Exception $e) {
     echo "Error updating approval status: " . $e->getMessage();

@@ -2,12 +2,6 @@
 CREATE DATABASE IF NOT EXISTS `distribution_system` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `distribution_system`;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `orders`
---
-
 CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
@@ -22,33 +16,17 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
--- --------------------------------------------------------
-
---
--- Table structure for table `products`
---
-
 CREATE TABLE `products` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `product_name` varchar(100) NOT NULL,
   `product_description` text DEFAULT NULL,
   `product_price` decimal(10,2) NOT NULL,
-  `supplier_id` int(11) NOT NULL,
   `stock` int(11) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
   `total_sold` int(11) DEFAULT NULL,
     PRIMARY KEY (`id`)
 );
 
-ALTER TABLE `products`
-  ADD KEY `supplier_id` (`supplier_id`);
-
-
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
@@ -57,51 +35,42 @@ CREATE TABLE `users` (
   `role` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `users`
---
-
 INSERT INTO `users` (`id`, `username`, `password`, `role`) VALUES
-(1, 'nq1', '123', 'supplier'),
+(1, 'nq1', '123', 'admin'),
 (2, 'nq2', '123', 'agent');
 
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
 
---
--- Indexes for table `orders`
---
+  
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+CREATE TABLE `admin` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL, -- Foreign key to `users` table
+  `restock_threshold` int(11) NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `agent` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL, -- Foreign key to `users` table
+  `name` varchar(255) NOT NULL,
+  `contact` varchar(50) NOT NULL,
+  `approve` tinyint(1) NOT NULL DEFAULT 0, -- Column for approval status (0 for not approved, 1 for approved)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD KEY `product_id` (`product_id`),
   ADD KEY `agent_id` (`agent_id`);
 
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `username` (`username`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `orders`
---
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- Constraints for dumped tables
---
-
---
 
