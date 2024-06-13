@@ -26,7 +26,7 @@ function fetchLowStockProducts($conn)
     $result = $stmt->get_result();
     if ($result && mysqli_num_rows($result) > 0) {
         echo '<section>';
-        echo '<h2>Products needing restocking:</h2>';
+        echo '<h3>Products needing restocking:</h3>';
         echo '<ul>';
         while ($row = mysqli_fetch_assoc($result)) {
             echo '<li>';
