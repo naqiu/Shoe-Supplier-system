@@ -1,3 +1,29 @@
+<style>
+    .flex-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .flex-container>a {
+        width: 200px;
+        background-color: #f2f2f2;
+        margin: 8px;
+        text-decoration: none;
+        color: #000;
+    }
+
+    .flex-container>a>img {
+        width: 100%;
+    }
+
+    .flex-container>a>div {
+        padding: 10px;
+    }
+
+    .flex-container>a:first-child {
+        margin-left: 0;
+    }
+</style>
 <?php
 include 'header.php';
 
@@ -20,28 +46,30 @@ function fetchLowStockProducts($conn)
         throw new Exception($conn->error);
     }
 
-    // Bind the parameter and execute the statement
     $stmt->bind_param("i", $_SESSION['user_id']);
     $stmt->execute();
     $result = $stmt->get_result();
-    if ($result && mysqli_num_rows($result) > 0) {
-        echo '<section>';
-        echo '<h3>Products needing restocking:</h3>';
-        echo '<ul>';
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo '<li>';
-            echo 'Product Name: ' . $row['product_name'] . '<br>';
-            echo 'Current Stock: ' . $row['stock'] . '<br>';
-            echo '</li>';
-        }
-        echo '</ul>';
-        echo '</section>';
+    if ($result && mysqli_num_rows($result) > 0): ?>
+        <h3>Products needing restocking:</h3>
+        <div class="flex-container">
+            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                <a href="updateProduct.php?id=<?php echo $row['id']; ?>">
+                    <img src="<?php echo $row['image']; ?>"><br>
+                    <div>
+                        <?php echo $row['product_name']; ?><br>
+                        Current Stock: <?php echo $row['stock']; ?><br>
+                    </div>
+                </a>
+            <?php endwhile; ?>
+        </div>
 
-        // Notify the supplier about low stock
-        echo '<script>alert("Some products need restocking!");</script>';
-    } else {
-        echo '<p>No products need restocking at the moment.</p>';
-    }
+        <script>
+            alert("Some products need restocking!");
+        </script>
+
+    <?php else: ?>
+        <p>No products need restocking at the moment.</p>
+    <?php endif;
 }
 
 function fetchPendingOrders($conn)
@@ -104,18 +132,15 @@ function fetchPendingOrders($conn)
     <?php endif;
 }
 
-
-
 ?>
 
-<section>
-    <h2>Welcome, Supplier!</h2>
+<h1>Welcome, <?php echo $_SESSION['username'] ?>!</h1>
+<p>This is the main content of the homepage.</p>
 
-    <p>to do:</p>
-    <p>-limited stock alert</p>
-    <p>-stock history graph /analytic</p>
-    <p>-sales report</p>
-</section>
+<p>to do:</p>
+<p>-search function</p>
+<p>-stock history graph /analytic</p>
+<p>-sales report</p>
 
 <?php
 // Display low stock products
@@ -127,7 +152,6 @@ fetchPendingOrders($conn);
 
 if (isset($_SESSION['order_approved'])) {
     echo '<script>alert("Order has been updated!");</script>';
-    // Unset the session variable to avoid displaying the alert multiple times
     unset($_SESSION['order_approved']);
 }
 ?>
