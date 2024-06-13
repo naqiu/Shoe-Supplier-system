@@ -17,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['username'] = $username;
         $_SESSION['role'] = $users['role'];
 
-        if ($users['role'] == 'supplier') {
-            header('Location: supplier.php');
+        if ($users['role'] == 'admin') {
+            header('Location: admin.php');
             exit();
         } elseif ($users['role'] == 'agent') {
             header('Location: agent.php');
