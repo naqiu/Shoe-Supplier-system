@@ -2,6 +2,9 @@
     table {
         max-width: 600px;
     }
+    td {
+        padding: 5px;
+    }
 </style>
 <?php
 include 'header.php';
