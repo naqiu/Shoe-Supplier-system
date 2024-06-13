@@ -9,7 +9,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $productName = $_POST['product_name'];
     $productDescription = $_POST['product_description'];
     $productPrice = $_POST['product_price'];
-    $supplierId = $_SESSION['user_id'];
     $stock = $_POST['stock'];
 
     // upload
@@ -19,16 +18,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     move_uploaded_file($_FILES["image"]["tmp_name"], $target_file);
 
     try {
-        $stmt = $conn->prepare("INSERT INTO products (product_name, product_description, product_price, supplier_id, stock, image) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO products (product_name, product_description, product_price, stock, image) VALUES (?, ?, ?, ?, ?)");
         if (!$stmt) {
             throw new Exception($conn->error);
         }
-        $stmt->bind_param("ssdiis", $productName, $productDescription, $productPrice, $supplierId, $stock, $target_file);
-
+        $stmt->bind_param("ssdis", $productName, $productDescription, $productPrice, $stock, $target_file);
+    
         if (!$stmt->execute()) {
             throw new Exception($stmt->error);
         }
-
+    
         echo "<p>Product created successfully!</p>";
     } catch (Exception $e) {
         echo "<p>Error: " . $e->getMessage() . "</p>";

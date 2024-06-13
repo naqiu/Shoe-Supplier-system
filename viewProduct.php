@@ -10,14 +10,11 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$supplierId = $_SESSION['user_id'];
-
 try {
-    $stmt = $conn->prepare("SELECT * FROM products WHERE supplier_id = ?");
+    $stmt = $conn->prepare("SELECT * FROM products");
     if (!$stmt) {
         throw new Exception($conn->error);
     }
-    $stmt->bind_param("i", $supplierId);
     $stmt->execute();
     $result = $stmt->get_result();
 } catch (Exception $e) {
@@ -29,7 +26,6 @@ try {
 <h2>Products</h2>
 <a class="btn btn-s mb-3" href="addProduct.php">Add Product</a>
 <table>
-    <tr>
         <th>ID</th>
         <th>Name</th>
         <th>Description</th>

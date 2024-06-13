@@ -8,11 +8,11 @@ if (!isset($_SESSION['user_id'])) {
 $id = $_GET['id'];
 
 try {
-    $stmt = $conn->prepare("DELETE FROM products WHERE id = ? AND supplier_id = ?");
+    $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");
     if (!$stmt) {
         throw new Exception($conn->error);
     }
-    $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+    $stmt->bind_param("i", $id);
 
     if (!$stmt->execute()) {
         throw new Exception($stmt->error);
