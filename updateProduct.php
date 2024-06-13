@@ -86,11 +86,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             name="product_description"><?php echo $product['product_description']; ?></textarea><br>
 
         <label>Price (RM):</label>
-        <input class="input mb-2" type="text" name="product_price" value="<?php echo $product['product_price']; ?>"
+        <input class="input mb-2" type="number" step="0.01" name="product_price" value="<?php echo $product['product_price']; ?>"
             required><br>
 
         <label>Stock:</label>
-        <input class="input mb-2" type="text" name="stock" value="<?php echo $product['stock']; ?>" required><br>
+        <input class="input mb-2" type="number" name="stock" value="<?php echo $product['stock']; ?>" required><br>
 
         <label>Image:</label>
         <img src="<?php echo $product['image']; ?>" width="100"><br>
