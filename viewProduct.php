@@ -24,8 +24,12 @@ try {
 }
 ?>
 <h2>Products</h2>
-<a class="btn btn-s mb-3" href="addProduct.php">Add Product</a>
+<div>
+    <a class="btn btn-s mb-3" href="addProduct.php">Add Product</a>
+    <a class="btn btn-s mb-3" href="inventoryReports.php">Inventory Reports</a>
+</div>
 <table>
+    <tr>
         <th>ID</th>
         <th>Name</th>
         <th>Description</th>
