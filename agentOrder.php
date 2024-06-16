@@ -75,6 +75,7 @@ if ($result && mysqli_num_rows($result) > 0):
     
     <form method="post" action="agentOrder.php">
         <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
+        <h3>Customer Details</h3>
         <label>Customer Name:</label>
         <input class="input mb-2" type="text" name="customer_name" required><br>
 
