@@ -1,6 +1,6 @@
 <?php
 // Include database connection
-include 'db_connect.php';
+include 'header.php';
 
 // Query to retrieve inventory levels (all products) and total sold
 $inventory_query = "SELECT p.product_name, p.stock, COALESCE(SUM(o.quantity), 0) AS total_sold
@@ -19,117 +19,119 @@ $stock_movements_query = "SELECT p.product_name, o.quantity, o.order_date
 $stock_movements_result = mysqli_query($conn, $stock_movements_query);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Inventory Reports</title>
+<title>Inventory Reports</title>
+
+<style>
+    .container {
+        max-width: 900px;
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    td {
+        padding: 5px;
+    }
+
+    .btn {
+        text-decoration: none;
+        color: #000;
+        margin-top: 15px;
+    }
+</style>
+
+<div id="content" class="container">
+    <h2>Inventory Reports</h2>
+    <h3>Inventory Levels</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Stock</th>
+                <th>Total Sold</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php while ($row = mysqli_fetch_assoc($inventory_result)): ?>
+                <tr>
+                    <td><?php echo $row['product_name']; ?></td>
+                    <td><?php echo $row['stock']; ?></td>
+                    <td><?php echo $row['total_sold']; ?></td>
+                </tr>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
+
+    <h3>Stock Movements (Last 30 Days)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Order Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php while ($row = mysqli_fetch_assoc($stock_movements_result)): ?>
+                <tr>
+                    <td><?php echo $row['product_name']; ?></td>
+                    <td><?php echo $row['quantity']; ?></td>
+                    <td><?php echo $row['order_date']; ?></td>
+                </tr>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <button class="btn btn-s" onclick="printContent()">Print</button>
+    <a class="btn btn-s" href="viewProduct.php">Back to Products</a>
+</div>
+
+
+<script>
+    function printContent() {
+        const content = document.getElementById("content").innerHTML;
+        const styles = `
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .back-button {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .back-button a {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-        .back-button a:hover {
-            background-color: #45a049;
-        }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10px;
+      }
+      th, td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      caption {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Inventory Reports</h1>
+  `;
 
-        <h2>Inventory Levels</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Stock</th>
-                    <th>Total Sold</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = mysqli_fetch_assoc($inventory_result)): ?>
-                    <tr>
-                        <td><?php echo $row['product_name']; ?></td>
-                        <td><?php echo $row['stock']; ?></td>
-                        <td><?php echo $row['total_sold']; ?></td>
-                    </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
+        const printFrame = document.createElement('iframe');
+        printFrame.style.display = 'none';
+        document.body.appendChild(printFrame);
 
-        <h2>Stock Movements (Last 30 Days)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Order Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = mysqli_fetch_assoc($stock_movements_result)): ?>
-                    <tr>
-                        <td><?php echo $row['product_name']; ?></td>
-                        <td><?php echo $row['quantity']; ?></td>
-                        <td><?php echo $row['order_date']; ?></td>
-                    </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
+        printFrame.contentDocument.write('<html><head><title>Print</title>');
+        printFrame.contentDocument.write(styles); // Include the CSS styles inline
+        printFrame.contentDocument.write('</head><body>');
+        printFrame.contentDocument.write(content);
+        printFrame.contentDocument.write('</body></html>');
 
-        <div class="back-button">
-            <a href="viewProduct.php">Back to Products</a>
-        </div>
-    </div>
+        printFrame.contentWindow.print();
 
-    <?php include 'footer.php'; ?>
+        setTimeout(() => {
+            document.body.removeChild(printFrame);
+        }, 1000); // Remove the iframe after printing
+    }
+</script>
 
-</body>
-</html>
-
-<?php
-// Close database connection
-mysqli_close($conn);
-?>
+<?php include 'footer.php'; ?>
