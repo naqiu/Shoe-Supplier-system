@@ -188,11 +188,6 @@ function fetchPendingOrders($conn)
 <h1>Welcome, <?php echo $_SESSION['username'] ?>!</h1>
 <p>This is the main content of the homepage.</p>
 
-<p>to do:</p>
-<p>-search function</p>
-<p>-stock history graph /analytic</p>
-<p>-sales report</p>
-
 <?php
 // Display low stock products
 fetchLowStockProducts($conn);
