@@ -1,6 +1,6 @@
 <?php
 // Include database connection
-include 'db_connect.php';
+include 'header.php';
 
 // Define how many results you want per page
 $results_per_page = 5;
@@ -59,55 +59,17 @@ $total_orders_row = mysqli_fetch_assoc($total_orders_result);
 $total_orders_pages = ceil($total_orders_row['total'] / $results_per_page);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+
     <title>Analytical Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        ul li {
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #f2f2f2;
-            border-radius: 4px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
+        td {
+    padding: 5px;
+}
+.container {
+    max-width: 900px;
+    margin-left: 0;
+}
         .pagination {
             text-align: center;
             margin-top: 20px;
@@ -116,38 +78,14 @@ $total_orders_pages = ceil($total_orders_row['total'] / $results_per_page);
             display: inline-block;
             padding: 10px 20px;
             margin: 0 5px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
             transition: background-color 0.3s ease;
-        }
-        .pagination a:hover {
-            background-color: #45a049;
-        }
-        .back-button {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .back-button a {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-        .back-button a:hover {
-            background-color: #45a049;
         }
         #salesChart {
             max-width: 100%;
             height: 400px;
         }
     </style>
-</head>
-<body>
+
     <div class="container">
         <h1>Analytical Dashboard</h1>
 
@@ -207,7 +145,7 @@ $total_orders_pages = ceil($total_orders_row['total'] / $results_per_page);
 
         <div class="pagination">
             <?php for ($page = 1; $page <= $total_stock_pages; $page++): ?>
-                <a href="analytic.php?page_stock=<?php echo $page; ?>"><?php echo $page; ?></a>
+                <a class="btn" href="analytic.php?page_stock=<?php echo $page; ?>"><?php echo $page; ?></a>
             <?php endfor; ?>
         </div>
 
@@ -237,21 +175,9 @@ $total_orders_pages = ceil($total_orders_row['total'] / $results_per_page);
 
         <div class="pagination">
             <?php for ($page = 1; $page <= $total_orders_pages; $page++): ?>
-                <a href="analytic.php?page_orders=<?php echo $page; ?>"><?php echo $page; ?></a>
+                <a class="btn" href="analytic.php?page_orders=<?php echo $page; ?>"><?php echo $page; ?></a>
             <?php endfor; ?>
-        </div>
-
-        <div class="back-button">
-            <a href="admin.php">Back to Admin Page</a>
         </div>
     </div>
 
     <?php include 'footer.php'; ?>
-
-</body>
-</html>
-
-<?php
-// Close database connection
-mysqli_close($conn);
-?>
