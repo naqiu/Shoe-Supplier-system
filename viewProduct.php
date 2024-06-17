@@ -1,8 +1,38 @@
 <style>
-    td {
-        max-width: 300px;
+    .search {
+        display: inline-block;
+        margin-left: auto;
+        float: right;
     }
+
+    .input {
+        font-size: 12px !important;
+    }
+
+    #search-input {
+    padding-right: 30px;
+}
+
+    .search-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+    .clear-btn {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.clear-btn:focus {
+    outline: none;
+}
 </style>
+
 <?php
 include 'header.php';
 if (!isset($_SESSION['user_id'])) {
@@ -10,8 +40,17 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$searchTerm = isset($_GET['search']) ? $_GET['search'] : '';
+
 try {
-    $stmt = $conn->prepare("SELECT * FROM products");
+    if ($searchTerm) {
+        $stmt = $conn->prepare("SELECT * FROM products WHERE product_name LIKE ? OR product_description LIKE ?");
+        $s = '%' . $searchTerm . '%';
+        $stmt->bind_param('ss', $s, $s);
+    } else {
+        $stmt = $conn->prepare("SELECT * FROM products");
+    }
+
     if (!$stmt) {
         throw new Exception($conn->error);
     }
@@ -27,7 +66,15 @@ try {
 <div>
     <a class="btn btn-s mb-3" href="addProduct.php">Add Product</a>
     <a class="btn btn-s mb-3" href="inventoryReports.php">Inventory Reports</a>
+    <form class="search" method="get" action="">
+    <div class="search-wrapper">
+        <input type="text" class="input" id="search-input" name="search" placeholder="Search products" value="<?php echo $searchTerm; ?>">
+        <button type="button" class="clear-btn" id="clear-btn" >&times;</button>
+        </div>
+        <button type="submit" class="btn btn-s">Search</button>
+    </form>
 </div>
+
 <table>
     <tr>
         <th>ID</th>
@@ -53,4 +100,28 @@ try {
         </tr>
     <?php endwhile; ?>
 </table>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById("search-input");
+    const clearBtn = document.getElementById("clear-btn");
+    const searchForm = document.querySelector(".search");
+
+    searchInput.addEventListener("input", function() {
+        if (searchInput.value.length > 0) {
+            clearBtn.style.display = "inline";
+        } else {
+            clearBtn.style.display = "none";
+        }
+    });
+
+    clearBtn.addEventListener("click", function() {
+        searchInput.value = "";
+        clearBtn.style.display = "none";
+        searchForm.submit();
+    });
+
+    // Trigger input event on page load to set initial state
+    searchInput.dispatchEvent(new Event('input'));
+});
+</script>
 <?php include 'footer.php'; ?>
