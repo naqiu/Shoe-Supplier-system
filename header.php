@@ -21,7 +21,7 @@ include 'db_connect.php';
             <a href="admin.php">Home</a>
             <a href="viewAgents.php">Agent</a>
             <a href="viewProduct.php">Products</a>
-            <a href="Sales.php">Sales</a>
+            <!-- <a href="Sales.php">Sales</a> -->
             <a href="salesReports.php">Sales Report</a>
             <a href="analytic.php">Analytic</a>
             <a href="adminSetting.php">Setting</a>
