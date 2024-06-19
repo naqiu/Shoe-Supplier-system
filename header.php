@@ -22,7 +22,7 @@ include 'db_connect.php';
             <a href="viewAgents.php">Agent</a>
             <a href="viewProduct.php">Products</a>
             <a href="Sales.php">Sales</a>
-            <a href="salesReport.php">Sales Report</a>
+            <a href="salesReports.php">Sales Report</a>
             <a href="analytic.php">Analytic</a>
             <a href="adminSetting.php">Setting</a>
         <?php } elseif ($_SESSION['role'] == 'agent') { ?>
