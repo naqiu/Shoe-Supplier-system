@@ -13,7 +13,6 @@
 include 'header.php'; ?>
 
 <h1>Welcome, <?php echo $_SESSION['username'] ?>!</h1>
-<p>This is the main content of the homepage.</p>
 
 <?php
 $query = "SELECT orders.*, products.product_name
