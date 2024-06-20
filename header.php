@@ -29,7 +29,7 @@ include 'db_connect.php';
             <a href="agent.php">Home</a>
             <a href="agentProduct.php">Product</a>
             <a href="agentSales.php">Sales</a>
-            <a href="#">Profile</a>
+            <a href="agentProfile.php">Profile</a>
         <?php } ?>
 
         <a href="logout.php">Logout</a>
