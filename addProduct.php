@@ -29,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     
         echo "<p>Product created successfully!</p>";
+        echo "<a class='btn btn-s mb-3' href='viewProduct.php'>Back to Product</a>";
     } catch (Exception $e) {
         echo "<p>Error: " . $e->getMessage() . "</p>";
     }

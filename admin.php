@@ -186,7 +186,7 @@ function fetchPendingOrders($conn)
 ?>
 
 <h1>Welcome, <?php echo $_SESSION['username'] ?>!</h1>
-<p>This is the main content of the homepage.</p>
+
 
 <?php
 // Display low stock products
