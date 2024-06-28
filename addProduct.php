@@ -1,5 +1,7 @@
 <?php
 include 'header.php';
+include 'exception.php';
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
@@ -19,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         if ($stock < 0) {
-            throw new Exception("Stock cannot be a negative value.");
+            throw new NegativeStockException("Stock cannot be a negative value.");
         }
         $stmt = $conn->prepare("INSERT INTO products (product_name, product_description, product_price, stock, image) VALUES (?, ?, ?, ?, ?)");
         if (!$stmt) {

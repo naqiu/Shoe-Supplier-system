@@ -1,5 +1,6 @@
 <?php
 include 'header.php';
+include 'exception.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -26,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         if ($stock < 0) {
-            throw new Exception("Stock cannot be a negative value.");
+            throw new NegativeStockException("Stock cannot be a negative value.");
         }
 
         $stmt = $conn->prepare("UPDATE products SET product_name = ?, product_description = ?, product_price = ?, stock = ?, image = ? WHERE id = ?");
@@ -61,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result = $stmt->get_result();
     
         if ($result->num_rows == 0) {
-            throw new Exception("Product not found");
+            throw new ProductNotFoundException("Product not found");
         }
     
         $product = $result->fetch_assoc();
