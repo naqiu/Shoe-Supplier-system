@@ -18,6 +18,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     move_uploaded_file($_FILES["image"]["tmp_name"], $target_file);
 
     try {
+        if ($stock < 0) {
+            throw new Exception("Stock cannot be a negative value.");
+        }
         $stmt = $conn->prepare("INSERT INTO products (product_name, product_description, product_price, stock, image) VALUES (?, ?, ?, ?, ?)");
         if (!$stmt) {
             throw new Exception($conn->error);
@@ -32,9 +35,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<a class='btn btn-s mb-3' href='viewProduct.php'>Back to Product</a>";
     } catch (Exception $e) {
         echo "<p>Error: " . $e->getMessage() . "</p>";
+        exit();
     }
 
-    $stmt->close();
+    if (isset($stmt)) {
+        $stmt->close();
+    }
     $conn->close();
 }
 ?>

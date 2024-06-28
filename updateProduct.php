@@ -25,12 +25,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     try {
+        if ($stock < 0) {
+            throw new Exception("Stock cannot be a negative value.");
+        }
+
         $stmt = $conn->prepare("UPDATE products SET product_name = ?, product_description = ?, product_price = ?, stock = ?, image = ? WHERE id = ?");
         if (!$stmt) {
             throw new Exception($conn->error);
         }
         $stmt->bind_param("ssdisi", $productName, $productDescription, $productPrice, $stock, $target_file, $id);
-    
+
         if (!$stmt->execute()) {
             throw new Exception($stmt->error);
         }
@@ -39,9 +43,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
+        exit();
     }
 
-    $stmt->close();
+    if (isset($stmt)) {
+        $stmt->close();
+    }
     $conn->close();
 } else {
     try {
