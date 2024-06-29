@@ -1,5 +1,19 @@
 <?php
+include 'user.php'; 
+
+class Agent implements User {
+    public function createUser($conn, $username, $password) {
+        // Insert the new agent profile into the database
+        $supplierId = $_SESSION['user_id'];
+        $query = "INSERT INTO users (username, password, role) VALUES ('$username', '$password', 'agent')";
+        $result = mysqli_query($conn, $query);
+
+        return $result;
+    }
+}
+
 include 'header.php';
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit();
@@ -11,22 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // You may want to add more validation and error checking here
 
-    // Insert the new agent profile into the database
-    $supplierId = $_SESSION['user_id'];
-    $query = "INSERT INTO users (username, password, role) VALUES ('$agentUsername', '$agentPassword', 'agent')";
-    $result = mysqli_query($conn, $query);
+    // Create Agent using Factory Method
+    $agent = new Agent();
+    $result = $agent->createUser($conn, $agentUsername, $agentPassword);
 
     if ($result) {
-        // Agent profile created successfully, redirect to supplier.php
+        // Agent profile created successfully, redirect to viewAgents.php
         echo '<p>Agent Created Successfully</p>';    
         header('Location: viewAgents.php');  
         exit();
     } else {
-        echo '<p>Agent has been made. Please try again.</p>';
+        echo '<p>Agent creation failed. Please try again.</p>';
     }
 }
-
-
 ?>
 <style>
     label {
