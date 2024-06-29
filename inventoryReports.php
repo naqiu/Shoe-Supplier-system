@@ -2,21 +2,76 @@
 // Include database connection
 include 'header.php';
 
-// Query to retrieve inventory levels (all products) and total sold
-$inventory_query = "SELECT p.product_name, p.stock, COALESCE(SUM(o.quantity), 0) AS total_sold
-                    FROM products p
-                    LEFT JOIN orders o ON p.id = o.product_id
-                    GROUP BY p.product_name, p.stock
-                    ORDER BY p.product_name ASC";
-$inventory_result = mysqli_query($conn, $inventory_query);
+// Handler interface
+interface QueryHandler {
+    public function setNext(QueryHandler $handler): QueryHandler;
+    public function handle($queryType);
+}
 
-// Query to retrieve stock movements (last 30 days)
-$stock_movements_query = "SELECT p.product_name, o.quantity, o.order_date
-                         FROM orders o
-                         JOIN products p ON o.product_id = p.id
-                         WHERE o.order_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-                         ORDER BY o.order_date DESC";
-$stock_movements_result = mysqli_query($conn, $stock_movements_query);
+// Abstract Handler
+abstract class AbstractQueryHandler implements QueryHandler {
+    private $nextHandler;
+
+    public function setNext(QueryHandler $handler): QueryHandler {
+        $this->nextHandler = $handler;
+        return $handler;
+    }
+
+    public function handle($queryType) {
+        if ($this->nextHandler) {
+            return $this->nextHandler->handle($queryType);
+        }
+        return null;
+    }
+}
+
+// Concrete Handler for Inventory Levels
+class InventoryLevelsHandler extends AbstractQueryHandler {
+    public function handle($queryType) {
+        if ($queryType === 'inventory_levels') {
+            global $conn; // Use the global database connection
+
+            $inventory_query = "SELECT p.product_name, p.stock, COALESCE(SUM(o.quantity), 0) AS total_sold
+                                FROM products p
+                                LEFT JOIN orders o ON p.id = o.product_id
+                                GROUP BY p.product_name, p.stock
+                                ORDER BY p.product_name ASC";
+            return mysqli_query($conn, $inventory_query);
+        } else {
+            return parent::handle($queryType);
+        }
+    }
+}
+
+// Concrete Handler for Stock Movements
+class StockMovementsHandler extends AbstractQueryHandler {
+    public function handle($queryType) {
+        if ($queryType === 'stock_movements') {
+            global $conn; // Use the global database connection
+
+            $stock_movements_query = "SELECT p.product_name, o.quantity, o.order_date
+                                      FROM orders o
+                                      JOIN products p ON o.product_id = p.id
+                                      WHERE o.order_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                                      ORDER BY o.order_date DESC";
+            return mysqli_query($conn, $stock_movements_query);
+        } else {
+            return parent::handle($queryType);
+        }
+    }
+}
+
+// Create the chain of handlers
+$inventoryHandler = new InventoryLevelsHandler();
+$stockMovementsHandler = new StockMovementsHandler();
+
+$inventoryHandler->setNext($stockMovementsHandler);
+
+// Retrieve inventory levels
+$inventory_result = $inventoryHandler->handle('inventory_levels');
+
+// Retrieve stock movements
+$stock_movements_result = $inventoryHandler->handle('stock_movements');
 ?>
 
 <title>Inventory Reports</title>
@@ -86,7 +141,6 @@ $stock_movements_result = mysqli_query($conn, $stock_movements_query);
     <button class="btn btn-s" onclick="printContent()">Print</button>
     <a class="btn btn-s" href="viewProduct.php">Back to Products</a>
 </div>
-
 
 <script>
     function printContent() {
