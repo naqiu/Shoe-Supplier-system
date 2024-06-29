@@ -28,10 +28,13 @@
         margin-left: 0;
     }
 
-    .alert {
+    .alert-cont {
         position: fixed;
         top: 35px;
         right: 20px;
+    }
+
+    .alert {
         padding: 20px;
         background-color: #f44336;
         color: white;
@@ -61,6 +64,18 @@
     }
 </style>
 <?php
+
+class AdminAlert {
+    public function triggerAlert($productName) {
+        ?>
+        <div class="alert warning">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            Low stock alert: <?= $productName ?> needs restocking!
+        </div>
+        <?php
+    }
+}
+
 include 'header.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -68,61 +83,32 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+
 function fetchLowStockProducts($conn)
 {
+    // Prepare SQL statement to fetch products with stock below restock threshold
     $stmt = $conn->prepare("
-    SELECT * FROM products WHERE stock < (
-        SELECT restock_threshold
-        FROM admin
-        WHERE user_id = ?
-    )
-");
+        SELECT * FROM products 
+        WHERE stock < (SELECT restock_threshold FROM admin WHERE user_id = ?)
+    ");
 
     if (!$stmt) {
         throw new Exception($conn->error);
     }
 
+    // Bind parameters and execute query
     $stmt->bind_param("i", $_SESSION['user_id']);
     $stmt->execute();
+
+    // Get result and close statement
     $result = $stmt->get_result();
-    if ($result && mysqli_num_rows($result) > 0): ?>
-        <h3>Products needing restocking:</h3>
-        <div class="flex-container">
-            <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                <a href="updateProduct.php?id=<?php echo $row['id']; ?>">
-                    <img src="<?php echo $row['image']; ?>"><br>
-                    <div>
-                        <b><?php echo $row['product_name']; ?></b><br>
-                        Current Stock: <?php echo $row['stock']; ?><br>
-                    </div>
-                </a>
-            <?php endwhile; ?>
-        </div>
-        <div class="alert warning">
-            <span class="closebtn">&times;</span>
-            Some products need restocking!
-        </div>
-        <script>
-            var close = document.getElementsByClassName("closebtn");
-            var i;
+    $stmt->close();
 
-            for (i = 0; i < close.length; i++) {
-                close[i].onclick = function () {
-                    var div = this.parentElement;
-                    div.style.opacity = "0";
-                    setTimeout(function () { div.style.display = "none"; }, 600);
-                }
-            }
-        </script>
-        <!-- <script>
-            alert("Some products need restocking!");
-        </script> -->
-
-    <?php else: ?>
-        <p>No products need restocking at the moment.</p>
-    <?php endif;
+    // Return fetched products
+    return $result->fetch_all(MYSQLI_ASSOC);
 }
 
+$products = fetchLowStockProducts($conn);
 function fetchPendingOrders($conn)
 {
     $query = "SELECT orders.*, products.product_name, users.username AS agent_username
@@ -168,7 +154,6 @@ function fetchPendingOrders($conn)
                         <td><?php echo $row['quantity']; ?></td>
                         <td>
                             <form method="post" action="updateOrderStatus.php">
-                                <a class="btn btn-s" href="xx.php?id=<?php echo $row['id']; ?>">Details</a>
                                 <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                                 <input type="hidden" name="status" value="Approved">
                                 <button class="btn btn-s" type="submit">Approve</button>
@@ -186,12 +171,31 @@ function fetchPendingOrders($conn)
 ?>
 
 <h1>Welcome, <?php echo $_SESSION['username'] ?>!</h1>
-
+<?php if (!empty($products)) : ?>
+        <h3>Products needing restocking:</h3>
+        <div class="alert-cont">
+        <?php $adminAlert = new AdminAlert(); ?>
+        <?php foreach ($products as $product) : ?>
+            <?php $adminAlert->triggerAlert($product['product_name']); ?>
+            <?php endforeach; ?>
+    </div>
+        <div class="flex-container">
+            <?php foreach ($products as $product) : ?>
+                <a href="updateProduct.php?id=<?php echo $product['id']; ?>">
+                    <img src="<?php echo htmlspecialchars($product['image']); ?>"><br>
+                    <div>
+                        <b><?php echo htmlspecialchars($product['product_name']); ?></b><br>
+                        Current Stock: <?php echo htmlspecialchars($product['stock']); ?><br>
+                    </div>
+                </a>
+                
+            <?php endforeach; ?>
+        </div>
+    <?php else : ?>
+        <p>No products need restocking at the moment.</p>
+    <?php endif; ?>
 
 <?php
-// Display low stock products
-fetchLowStockProducts($conn);
-
 // Display orders with 'Pending' approval status
 fetchPendingOrders($conn);
 
