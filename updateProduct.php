@@ -1,5 +1,6 @@
 <?php
 include 'header.php';
+include 'exception.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -25,12 +26,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     try {
+        if ($stock < 0) {
+            throw new NegativeStockException("Stock cannot be a negative value.");
+        }
+
         $stmt = $conn->prepare("UPDATE products SET product_name = ?, product_description = ?, product_price = ?, stock = ?, image = ? WHERE id = ?");
         if (!$stmt) {
             throw new Exception($conn->error);
         }
         $stmt->bind_param("ssdisi", $productName, $productDescription, $productPrice, $stock, $target_file, $id);
-    
+
         if (!$stmt->execute()) {
             throw new Exception($stmt->error);
         }
@@ -39,9 +44,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
+        exit();
     }
 
-    $stmt->close();
+    if (isset($stmt)) {
+        $stmt->close();
+    }
     $conn->close();
 } else {
     try {
@@ -54,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result = $stmt->get_result();
     
         if ($result->num_rows == 0) {
-            throw new Exception("Product not found");
+            throw new ProductNotFoundException("Product not found");
         }
     
         $product = $result->fetch_assoc();
