@@ -6,8 +6,8 @@ include 'header.php';
 $results_per_page = 5;
 
 // Determine which page number visitor is currently on
-$page_stock = isset($_GET['page_stock']) ? (int)$_GET['page_stock'] : 1;
-$page_orders = isset($_GET['page_orders']) ? (int)$_GET['page_orders'] : 1;
+$page_stock = isset($_GET['page_stock']) ? (int) $_GET['page_stock'] : 1;
+$page_orders = isset($_GET['page_orders']) ? (int) $_GET['page_orders'] : 1;
 
 // Determine the SQL LIMIT starting number for the results on the displaying page
 $start_stock = ($page_stock - 1) * $results_per_page;
@@ -43,49 +43,163 @@ $total_stock_result = mysqli_query($conn, $total_stock_query);
 $total_stock_row = mysqli_fetch_assoc($total_stock_result);
 $total_stock_pages = ceil($total_stock_row['total'] / $results_per_page);
 
+// Strategy Pattern Implementation for Order Histories
+// Strategy interface
+interface OrderSortStrategy
+{
+    public function sort(array $data): array;
+}
+
+// Concrete strategy for sorting by order date
+class SortByOrderDateStrategy implements OrderSortStrategy
+{
+    public function sort(array $data): array
+    {
+        usort($data, function ($a, $b) {
+            return strcmp($b['order_date'], $a['order_date']);
+        });
+        return $data;
+    }
+}
+
+// Concrete strategy for sorting by product name
+class SortByProductNameStrategy implements OrderSortStrategy
+{
+    public function sort(array $data): array
+    {
+        usort($data, function ($a, $b) {
+            return strcmp($a['product_name'], $b['product_name']);
+        });
+        return $data;
+    }
+}
+
+// Concrete strategy for sorting by quantity
+class SortByQuantityStrategy implements OrderSortStrategy
+{
+    public function sort(array $data): array
+    {
+        usort($data, function ($a, $b) {
+            return $b['quantity'] - $a['quantity'];
+        });
+        return $data;
+    }
+}
+
+// Concrete strategy for sorting by sales amount
+class SortBySalesAmountStrategy implements OrderSortStrategy
+{
+    public function sort(array $data): array
+    {
+        usort($data, function ($a, $b) {
+            return $b['sales_amount'] - $a['sales_amount'];
+        });
+        return $data;
+    }
+}
+
+// Context that uses a strategy
+class OrderSortContext
+{
+    private $strategy;
+
+    public function __construct(OrderSortStrategy $strategy)
+    {
+        $this->strategy = $strategy;
+    }
+
+    public function setStrategy(OrderSortStrategy $strategy)
+    {
+        $this->strategy = $strategy;
+    }
+
+    public function sort(array $data): array
+    {
+        return $this->strategy->sort($data);
+    }
+}
+
 // Query to retrieve order histories (last 10 orders) with pagination
 $orders_query = "SELECT orders.order_date, products.product_name, orders.quantity, orders.sales_amount, users.username AS agent_name
                 FROM orders
                 JOIN products ON orders.product_id = products.id
                 JOIN users ON orders.agent_id = users.id
-                ORDER BY orders.order_date DESC
                 LIMIT $start_orders, $results_per_page";
 $orders_result = mysqli_query($conn, $orders_query);
+
+$order_histories = [];
+while ($row = mysqli_fetch_assoc($orders_result)) {
+    $order_histories[] = $row;
+}
 
 // Query to get the total number of order records
 $total_orders_query = "SELECT COUNT(*) AS total FROM orders";
 $total_orders_result = mysqli_query($conn, $total_orders_query);
 $total_orders_row = mysqli_fetch_assoc($total_orders_result);
 $total_orders_pages = ceil($total_orders_row['total'] / $results_per_page);
+
+// Use the strategy pattern for sorting order histories
+if (isset($_GET['sort_order'])) {
+    switch ($_GET['sort_order']) {
+        case 'product_name':
+            $orderSortStrategy = new SortByProductNameStrategy();
+            break;
+        case 'quantity':
+            $orderSortStrategy = new SortByQuantityStrategy();
+            break;
+        case 'sales_amount':
+            $orderSortStrategy = new SortBySalesAmountStrategy();
+            break;
+        case 'order_date':
+        default:
+            $orderSortStrategy = new SortByOrderDateStrategy();
+            break;
+    }
+} else {
+    $orderSortStrategy = new SortByOrderDateStrategy();
+}
+
+$orderSortContext = new OrderSortContext($orderSortStrategy);
+$sortedOrderHistories = $orderSortContext->sort($order_histories);
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
     <title>Analytical Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         td {
-    padding: 5px;
-}
-.container {
-    max-width: 900px;
-    margin-left: 0;
-}
+            padding: 5px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin-left: 0;
+        }
+
         .pagination {
             text-align: center;
             margin-top: 20px;
         }
+
         .pagination a {
             display: inline-block;
             padding: 10px 20px;
             margin: 0 5px;
             transition: background-color 0.3s ease;
         }
+
         #salesChart {
             max-width: 100%;
             height: 400px;
         }
     </style>
+</head>
 
+<body>
     <div class="container">
         <h1>Analytical Dashboard</h1>
 
@@ -150,6 +264,21 @@ $total_orders_pages = ceil($total_orders_row['total'] / $results_per_page);
         </div>
 
         <h2>Order Histories (Last 10 Orders)</h2>
+        <div style="padding-bottom: 6px; display: block;">
+            <label for="sortOrder">Sort by:</label>
+            <select id="sortOrder" onchange="sortOrders()">
+                <option value="order_date">Order Date</option>
+                <option value="product_name">Product Name</option>
+                <option value="quantity">Quantity</option>
+                <option value="sales_amount">Sales Amount</option>
+            </select>
+        </div>
+        <script>
+            function sortOrders() {
+                var sortOrder = document.getElementById("sortOrder").value;
+                window.location.href = "analytic.php?sort_order=" + sortOrder;
+            }
+        </script>
         <table>
             <thead>
                 <tr>
@@ -161,7 +290,7 @@ $total_orders_pages = ceil($total_orders_row['total'] / $results_per_page);
                 </tr>
             </thead>
             <tbody>
-                <?php while ($row = mysqli_fetch_assoc($orders_result)): ?>
+                <?php foreach ($sortedOrderHistories as $row): ?>
                     <tr>
                         <td><?php echo $row['order_date']; ?></td>
                         <td><?php echo $row['product_name']; ?></td>
@@ -169,7 +298,7 @@ $total_orders_pages = ceil($total_orders_row['total'] / $results_per_page);
                         <td>RM <?php echo number_format($row['sales_amount'], 2); ?></td>
                         <td><?php echo $row['agent_name']; ?></td>
                     </tr>
-                <?php endwhile; ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
 
@@ -181,3 +310,6 @@ $total_orders_pages = ceil($total_orders_row['total'] / $results_per_page);
     </div>
 
     <?php include 'footer.php'; ?>
+</body>
+
+</html>
