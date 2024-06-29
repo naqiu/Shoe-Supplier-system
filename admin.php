@@ -154,7 +154,6 @@ function fetchPendingOrders($conn)
                         <td><?php echo $row['quantity']; ?></td>
                         <td>
                             <form method="post" action="updateOrderStatus.php">
-                                <a class="btn btn-s" href="xx.php?id=<?php echo $row['id']; ?>">Details</a>
                                 <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                                 <input type="hidden" name="status" value="Approved">
                                 <button class="btn btn-s" type="submit">Approve</button>
